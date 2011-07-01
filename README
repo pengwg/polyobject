@@ -1,0 +1,2 @@
+Convert vtkPolyData file exported by itk-snap to the XML file recognized by Vurtigo.
+usage: polyobject inputfile [outputfile]
