@@ -1,10 +1,15 @@
-#include <QXmlStreamWriter>
-#include <vtkPolyDataReader.h>
+#include <QFile>
+
+#include "polydata2xml.h"
 
 int main(int argc, char *argv[])
 {
     QString fileName;
-    vtkPolyDataReader *reader = vtkPolyDataReader::New();
+
+    QFile file;
+    PolyData2Xml poly2xml(&file);
+    poly2xml.WriteXml(&file);
+
     return 0;
 }
 

@@ -15,6 +15,7 @@ endif(VTK_FOUND)
 
 set(SRC_FILES
     polyObject.cpp
+    polydata2xml.cpp
 )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
