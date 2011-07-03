@@ -1,3 +1,4 @@
+#include <vtkPolyData.h>
 #include "polydata2xml.h"
 
 PolyData2Xml::PolyData2Xml(QFile *file)
@@ -11,7 +12,9 @@ PolyData2Xml::PolyData2Xml(QFile *file)
 
 bool PolyData2Xml::WriteXml(QFile *file)
 {
-    qWarning("%s", file->fileName().toAscii().constData());
     xml = new QXmlStreamWriter(file);
+    vtkPolyData *data = poly->GetOutput();
+    vtkCellArray *cells = data->GetPolys();
+
     return true;
 }

@@ -1,4 +1,5 @@
 #include <QFile>
+#include <QTextStream>
 
 #include "polydata2xml.h"
 
@@ -28,7 +29,10 @@ int main(int argc, char *argv[])
     QFile output(outputName);
 
     PolyData2Xml poly2xml(&input);
-    poly2xml.WriteXml(&output);
+    if (poly2xml.WriteXml(&output)) {
+        QTextStream out(stdout);
+        out << outputName << " successfully generated." << endl;
+    }
 
     return 0;
 }
