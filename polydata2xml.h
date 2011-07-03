@@ -10,6 +10,7 @@ class PolyData2Xml
 {
 public:
     PolyData2Xml(QFile *file);
+    ~PolyData2Xml();
     bool WriteXml(QFile *file);
 
 private:
