@@ -1,5 +1,7 @@
 #include <vtkCellArray.h>
 #include <vtkPolyData.h>
+#include <vtkTriangleFilter.h>
+
 #include "polydata2xml.h"
 
 PolyData2Xml::PolyData2Xml(QFile *file)
@@ -20,23 +22,26 @@ bool PolyData2Xml::WriteXml(QFile *file)
 {
     xml = new QXmlStreamWriter(file);
 
-    vtkPolyData *data = poly->GetOutput();
+    vtkPolyData *polyData = poly->GetOutput();
     poly->Update();
 
+    // Get points.
+    vtkPoints *points;
+    vtkIdType numPoints = polyData->GetNumberOfPoints();
+    points = GetPoints();
+
+    // Get strip cells.
     vtkCellArray *cells;
-    vtkIdType numPoints = data->GetNumberOfPoints();
-    vtkIdType numStrips = data->GetNumberOfStrips();
+    vtkIdType numStrips = polyData->GetNumberOfStrips();
+    cells = data->GetStrips();
 
-    if (numStrips == 0) {
-        qWarning("0 strips");
-        return false;
-    }
-    else
-        cells = data->GetStrips();
+    vtkTriangleFilter *triangleFilter = vtkTriangleFilter::New();
+    triangleFilter->SetInput(polyData);
 
+
+    // Get Strip data.
     vtkIdType npts, *pts;
     int n;
-
     cells->InitTraversal();
     for (vtkIdType i = 0; i < numStrips; i++) {
         n = cells->GetNextCell(npts, pts);
