@@ -13,8 +13,9 @@ public:
     bool WriteXml(QFile *file);
 
 private:
+    QFile *input;
     vtkPolyDataReader *poly;
-    QXmlStreamWriter xml;
+    QXmlStreamWriter *xml;
 };
 
 #endif // POLYDATA2XML_H

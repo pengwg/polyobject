@@ -4,11 +4,31 @@
 
 int main(int argc, char *argv[])
 {
-    QString fileName;
+    if (argc < 2 || argc > 3) {
+        qWarning("Usage: argv[0] <vtkPolyData File> [output]");
+        return 0;
+    }
 
-    QFile file;
-    PolyData2Xml poly2xml(&file);
-    poly2xml.WriteXml(&file);
+    QString inputName(argv[1]);
+    QFile input(inputName);
+
+    if (!input.exists()) {
+        qWarning("%s does not exist!", argv[1]);
+        return 0;
+    }
+
+    QString outputName;
+
+    if (argc == 3)
+        outputName = QString(argv[2]);
+    else {
+        outputName = inputName + ".xml";
+    }
+
+    QFile output(outputName);
+
+    PolyData2Xml poly2xml(&input);
+    poly2xml.WriteXml(&output);
 
     return 0;
 }
