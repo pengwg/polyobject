@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     PolyData2Xml poly2xml(&input);
     if (poly2xml.WriteXml(&output)) {
         QTextStream out(stdout);
-        out << outputName << " successfully generated." << endl;
+        out << "Export to " << outputName << " ..." << " done!" << endl;
     }
 
     output.close();
