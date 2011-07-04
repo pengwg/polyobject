@@ -2,6 +2,8 @@
 #include <vtkPolyData.h>
 #include <vtkTriangleFilter.h>
 
+#include <QTextStream>
+
 #include "polydata2xml.h"
 
 PolyData2Xml::PolyData2Xml(QFile *file)
@@ -20,32 +22,44 @@ PolyData2Xml::~PolyData2Xml()
 
 bool PolyData2Xml::WriteXml(QFile *file)
 {
-    xml = new QXmlStreamWriter(file);
+    QTextStream out(stdout);
 
     vtkPolyData *polyData = poly->GetOutput();
     poly->Update();
 
-    // Get points.
-    vtkPoints *points;
     vtkIdType numPoints = polyData->GetNumberOfPoints();
-    points = GetPoints();
-
-    // Get strip cells.
-    vtkCellArray *cells;
+    out << "Input: " << numPoints << " Points, ";
     vtkIdType numStrips = polyData->GetNumberOfStrips();
-    cells = data->GetStrips();
+    out << numStrips << " triangle strips." << endl;
 
+    // Convert strips to triangels
     vtkTriangleFilter *triangleFilter = vtkTriangleFilter::New();
     triangleFilter->SetInput(polyData);
+    vtkPolyData *polyDataTri = triangleFilter->GetOutput();
+    triangleFilter->Update();
 
+    numPoints = polyDataTri->GetNumberOfPoints();
+    out << "Convert to: " << numPoints << " Points, ";
+    vtkIdType numTri = polyDataTri->GetNumberOfPolys();
+    out << numTri << " triangles." << endl;
 
-    // Get Strip data.
+    // Get points.
+    vtkPoints *points;
+    points = polyDataTri->GetPoints();
+
+    // Get triangle cells.
+    vtkCellArray *cells;
+    cells = polyDataTri->GetPolys();
+
+    // Get triangle data.
     vtkIdType npts, *pts;
     int n;
     cells->InitTraversal();
-    for (vtkIdType i = 0; i < numStrips; i++) {
+    for (vtkIdType i = 0; i < numTri; i++) {
         n = cells->GetNextCell(npts, pts);
     }
 
+    xml = new QXmlStreamWriter(file);
+    triangleFilter->Delete();
     return true;
 }
