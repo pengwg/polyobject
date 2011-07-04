@@ -27,6 +27,8 @@ int main(int argc, char *argv[])
     }
 
     QFile output(outputName);
+    if (!output.open(QFile::WriteOnly | QFile::Text))
+        qWarning("Cannot write to file %s", outputName.toAscii().constData());
 
     PolyData2Xml poly2xml(&input);
     if (poly2xml.WriteXml(&output)) {
@@ -34,6 +36,7 @@ int main(int argc, char *argv[])
         out << outputName << " successfully generated." << endl;
     }
 
+    output.close();
     return 0;
 }
 
