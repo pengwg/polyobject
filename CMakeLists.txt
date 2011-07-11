@@ -20,5 +20,5 @@ set(SRC_FILES
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(polyobject ${SRC_FILES})
-target_link_libraries(polyobject ${QT_LIBRARIES} vtkIO vtkGraphics)
+add_executable(vtk2xml ${SRC_FILES})
+target_link_libraries(vtk2xml ${QT_LIBRARIES} vtkIO vtkGraphics)
