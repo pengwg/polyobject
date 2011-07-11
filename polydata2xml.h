@@ -5,6 +5,7 @@
 
 #include <QXmlStreamWriter>
 #include <vtkPolyDataReader.h>
+#include <vtkTriangleFilter.h>
 
 class PolyData2Xml
 {
@@ -14,9 +15,10 @@ public:
     bool WriteXml(QFile *file);
 
 private:
-    QFile *input;
-    vtkPolyDataReader *poly;
-    QXmlStreamWriter *xml;
+    vtkTriangleFilter *triangleFilter;
+    vtkPolyData *polyDataTri;
+    vtkIdType numPoints;
+    vtkIdType numTri;
 };
 
 #endif // POLYDATA2XML_H
