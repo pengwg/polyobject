@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     out << "Export to " << outputName << " ...";
     out.flush();
     if (poly2xml.WriteXml(&output)) {
-        out << " done!" << endl;
+        out << "\33[32m" << " done!" << "\33[0m" << endl;
     }
 
     output.close();
