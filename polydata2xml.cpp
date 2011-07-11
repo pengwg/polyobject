@@ -1,3 +1,4 @@
+#include <vtkPointData.h>
 #include <vtkCellArray.h>
 #include <vtkPolyData.h>
 #include <vtkTriangleFilter.h>
@@ -43,6 +44,7 @@ bool PolyData2Xml::WriteXml(QFile *file)
     out << "Convert to -- " << numPoints << " points, ";
     vtkIdType numTri = polyDataTri->GetNumberOfPolys();
     out << numTri << " triangles." << endl;
+    vtkDataArray *dataArray = polyDataTri->GetPointData()->GetScalars();
 
     // Get triangle cells.
     vtkCellArray *cells;
@@ -65,15 +67,26 @@ bool PolyData2Xml::WriteXml(QFile *file)
     xml->writeStartElement("PointList");
     // Write points.
     double coordinate[3];
+    double label;
+    double colorTable[8][3] = { {1, 0, 0},
+                                {0, 1, 0},
+                                {0, 0, 1},
+                                {1, 1, 0},
+                                {0, 1, 1},
+                                {1, 0, 1},
+                                {1, 1, 1},
+                                {0, 0, 0.5} };
+
     for (vtkIdType i = 0; i < numPoints; i++) {
         polyDataTri->GetPoint(i, coordinate);
+        label = dataArray->GetTuple1(i);
         xml->writeStartElement("Point");
         xml->writeAttribute("X", QString::number(coordinate[0], 'f', 4));
         xml->writeAttribute("Y", QString::number(coordinate[1], 'f', 4));
         xml->writeAttribute("Z", QString::number(coordinate[2], 'f', 4));
-        xml->writeAttribute("R", "1");
-        xml->writeAttribute("G", "0");
-        xml->writeAttribute("B", "0");
+        xml->writeAttribute("R", QString::number(colorTable[int(label-1)][0], 'f', 4));
+        xml->writeAttribute("G", QString::number(colorTable[int(label-1)][1], 'f', 4));
+        xml->writeAttribute("B", QString::number(colorTable[int(label-1)][2], 'f', 4));
         xml->writeAttribute("ID", QString::number(i));
         xml->writeEndElement();
     }
