@@ -31,9 +31,12 @@ int main(int argc, char *argv[])
         qWarning("Cannot write to file %s", outputName.toAscii().constData());
 
     PolyData2Xml poly2xml(&input);
+
+    QTextStream out(stdout);
+    out << "Export to " << outputName << " ...";
+    out.flush();
     if (poly2xml.WriteXml(&output)) {
-        QTextStream out(stdout);
-        out << "Export to " << outputName << " ..." << " done!" << endl;
+        out << " done!" << endl;
     }
 
     output.close();

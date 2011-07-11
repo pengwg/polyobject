@@ -1,7 +1,6 @@
 #include <vtkPointData.h>
 #include <vtkCellArray.h>
 #include <vtkPolyData.h>
-#include <vtkTriangleFilter.h>
 
 #include <QTextStream>
 
@@ -9,48 +8,50 @@
 
 PolyData2Xml::PolyData2Xml(QFile *file)
 {
-    poly = vtkPolyDataReader::New();
+    QTextStream out(stdout);
+
+    vtkPolyDataReader *poly = vtkPolyDataReader::New();
     poly->SetFileName(file->fileName().toAscii().constData());
 
     if (!poly->IsFilePolyData())
         qFatal("Not valid PolyData file!");
-}
-
-PolyData2Xml::~PolyData2Xml()
-{
-    poly->Delete();
-    delete xml;
-}
-
-bool PolyData2Xml::WriteXml(QFile *file)
-{
-    QTextStream out(stdout);
 
     vtkPolyData *polyData = poly->GetOutput();
     poly->Update();
 
-    vtkIdType numPoints = polyData->GetNumberOfPoints();
+    numPoints = polyData->GetNumberOfPoints();
     out << "Input -- " << numPoints << " points, ";
     vtkIdType numStrips = polyData->GetNumberOfStrips();
     out << numStrips << " triangle strips." << endl;
 
     // Convert strips to triangels
-    vtkTriangleFilter *triangleFilter = vtkTriangleFilter::New();
+    triangleFilter = vtkTriangleFilter::New();
     triangleFilter->SetInput(polyData);
-    vtkPolyData *polyDataTri = triangleFilter->GetOutput();
+    polyDataTri = triangleFilter->GetOutput();
     triangleFilter->Update();
 
     numPoints = polyDataTri->GetNumberOfPoints();
     out << "Convert to -- " << numPoints << " points, ";
-    vtkIdType numTri = polyDataTri->GetNumberOfPolys();
+    numTri = polyDataTri->GetNumberOfPolys();
     out << numTri << " triangles." << endl;
+
+    poly->Delete();
+}
+
+PolyData2Xml::~PolyData2Xml()
+{
+    triangleFilter->Delete();
+}
+
+bool PolyData2Xml::WriteXml(QFile *file)
+{
     vtkDataArray *dataArray = polyDataTri->GetPointData()->GetScalars();
 
     // Get triangle cells.
     vtkCellArray *cells;
     cells = polyDataTri->GetPolys();
 
-    xml = new QXmlStreamWriter(file);
+    QXmlStreamWriter *xml = new QXmlStreamWriter(file);
     xml->setAutoFormatting(true);
 
     xml->writeStartDocument();
@@ -67,7 +68,7 @@ bool PolyData2Xml::WriteXml(QFile *file)
     xml->writeStartElement("PointList");
     // Write points.
     double coordinate[3];
-    double label;
+    double label = 0;
     double colorTable[8][3] = { {1, 0, 0},
                                 {0, 1, 0},
                                 {0, 0, 1},
@@ -79,7 +80,8 @@ bool PolyData2Xml::WriteXml(QFile *file)
 
     for (vtkIdType i = 0; i < numPoints; i++) {
         polyDataTri->GetPoint(i, coordinate);
-        label = dataArray->GetTuple1(i);
+        if (dataArray)
+            label = dataArray->GetTuple1(i);
         xml->writeStartElement("Point");
         xml->writeAttribute("X", QString::number(coordinate[0], 'f', 4));
         xml->writeAttribute("Y", QString::number(coordinate[1], 'f', 4));
@@ -110,7 +112,6 @@ bool PolyData2Xml::WriteXml(QFile *file)
     xml->writeEndElement(); // </Phase>
     xml->writeEndElement(); // </VurtigoFile>
     xml->writeEndDocument();
-
-    triangleFilter->Delete();
+    delete xml;
     return true;
 }
