@@ -68,7 +68,7 @@ bool PolyData2Xml::WriteXml(QFile *file)
     xml->writeStartElement("PointList");
     // Write points.
     double coordinate[3];
-    double label = 0;
+    double label = 1;
     double colorTable[8][3] = { {1, 0, 0},
                                 {0, 1, 0},
                                 {0, 0, 1},
