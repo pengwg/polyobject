@@ -83,8 +83,8 @@ bool PolyData2Xml::WriteXml(QFile *file)
         if (dataArray)
             label = dataArray->GetTuple1(i);
         xml->writeStartElement("Point");
-        xml->writeAttribute("X", QString::number(coordinate[0], 'f', 4));
-        xml->writeAttribute("Y", QString::number(coordinate[1], 'f', 4));
+        xml->writeAttribute("X", QString::number(-coordinate[0], 'f', 4));
+        xml->writeAttribute("Y", QString::number(-coordinate[1], 'f', 4));
         xml->writeAttribute("Z", QString::number(coordinate[2], 'f', 4));
         xml->writeAttribute("R", QString::number(colorTable[int(label-1)][0], 'f', 4));
         xml->writeAttribute("G", QString::number(colorTable[int(label-1)][1], 'f', 4));

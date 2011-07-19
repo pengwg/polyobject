@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
     if (argc < 2 || argc > 3) {
-        qWarning("Usage: argv[0] <vtkPolyData File> [output]");
+        qWarning("Usage: vtk2xml <vtkPolyData File> [output]");
         return 0;
     }
 
